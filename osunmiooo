@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Receipt</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<body class="bg-dark">
+    <div class="" id="whole">
+        <header>
+            <div class="bg-primary text-white text-center p-3">
+                <h1>e-Receipt</h1>
+            </div>
+        </header>
+        <div class="table-responsive">
+            <table class="table table-striped table-dark text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>S/N</th>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody">
+                    <tr class="text-center">
+                        <td>
+                            <span id="sn" class="">1</span>
+                        </td>
+                        <td>
+                            <input class="text-center" id="itemInp1" type="text">
+                        </td>
+                        <td>
+                            <input class="text-center inpr1" id="priceInp1" type="number">
+                        </td>
+                        <td>
+                            <input class="text-center inp1" id="quantityInp1" type="number">
+                        </td>
+                        <td>
+                            <input class="text-center bg-white" id="totalDisp1" type="number" value="0" disabled>
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary editBtn" id="1" value="Edit">
+                        </td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="fixed-bottom">
+        <div class="row mb-5 ">
+            <div class="col-11"></div>
+            <div class="col-1 whole"><button id="btnAdd"
+                    class="btn btn-primary mr-2 font-weight-bold"><span>+</span></button><button id="btnMinus"
+                    class="btn btn-primary font-weight-bold"><span>-</span></button></div>
+        </div>
+        <div class=" bg-light row p-3">
+            <div class="col-9">
+
+            </div>
+            <div class="col-3 font-weight-bold">Grand Total :<span id="grandT"
+                    class="ml-1 bg-dark rounded pr-3 pl-3 text-white">0</span>Naira</div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            let grandTot = 0;
+            let i = 1;
+            let presentIndex = 1;
+            let totalRowTemp;
+            let editBtns;
+            function calc() {
+                $(`.inp${i}`).on("keyup", function () {
+                    $(`#totalDisp${i}`).val(parseInt($(`#priceInp${i}`).val()) * parseInt($(`#quantityInp${i}`).val()));
+                    if (grandTot == 0) {
+                        $("#grandT").html($(`#totalDisp${i}`).val());
+                    } else {
+                        $("#grandT").html(parseInt($(`#totalDisp${i}`).val()) + parseInt(grandTot));
+                    }
+                })
+            }
+            calc();
+
+            $("#btnAdd").click(function () {
+                if ($(`#totalDisp${i}`).val() != "0" && $(`#itemInp${i}`).val() != "") {
+                    grandTot = $("#grandT").html();
+                    $(`#quantityInp${i}`).prop("disabled", true);
+                    $(`#priceInp${i}`).prop("disabled", true);
+                    $(`#itemInp${i}`).prop("disabled", true);
+                    i++;
+                    presentIndex++;
+                    $("#tBody").append(`<tr class="text-center">
+                        <td>
+                            <span id="sn" class="">${i}</span>
+                        </td>
+                        <td>
+                            <input class="text-center" id="itemInp${i}" type="text">
+                            </td>
+                        <td>
+                            <input class="text-center" id="priceInp${i}" type="number">
+                        </td>
+                        <td>
+                            <input class="text-center inp${i}" id="quantityInp${i}" type="number">
+                        </td>
+                        <td>
+                            <input class="text-center bg-white" id="totalDisp${i}" type="number" value="0" disabled>
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary editBtn" id="${i}" value="Edit">
+                        </td>
+                    </tr>`)
+                    calc();
+
+                    function editTinz() {
+                        editBtns = $(".editBtn");
+                        editBtns.each(function () {
+                            $(this).on("click", function () {
+                                console.log("before edit   " + i);
+                                $(`#quantityInp${i}`).prop("disabled", true);
+                                $(`#priceInp${i}`).prop("disabled", true);
+                                $(`#itemInp${i}`).prop("disabled", true);
+                                i = $(this).attr("id");
+                                $(this).val("Save");
+                                $(this).attr("id", "saveBtn");
+                                $(`#quantityInp${i}`).prop("disabled", false);
+                                $(`#priceInp${i}`).prop("disabled", false);
+                                $(`#itemInp${i}`).prop("disabled", false);
+                                totalRowTemp = $(`#totalDisp${i}`).val();
+                                grandTot = ($("#grandT").html()) - totalRowTemp;
+                                calc();
+                                $("#saveBtn").on("click", function () {
+                                    $(`#quantityInp${i}`).prop("disabled", true);
+                                    $(`#priceInp${i}`).prop("disabled", true);
+                                    $(`#itemInp${i}`).prop("disabled", true);
+                                    $("#saveBtn").val("Edit");
+                                    // $("#saveBtn").attr("id", "");
+                                    i = presentIndex;
+                                    console.log(i);
+                                    $(`#quantityInp${i}`).prop("disabled", false);
+                                    $(`#priceInp${i}`).prop("disabled", false);
+                                    $(`#itemInp${i}`).prop("disabled", false);
+                                    editTinz();
+                                    calc();
+                                })
+
+                            })
+
+                        })
+                    }
+                    editTinz();
+
+                } else {
+                    $('.whole').effect('shake')
+                    
+                }
+            })
+
+            $("#btnMinus").click(function () {
+                $("tBody").children("tr:last").remove();
+                i--;
+                presentIndex--;
+            })
+
+
+
+
+        })
+    </script>
+</body>
+
+</html>

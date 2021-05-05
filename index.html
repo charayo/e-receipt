@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Receipt</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+
+<body class="bg-dark">
+    <div class="" id="whole">
+        <header>
+            <div class="bg-primary text-white text-center p-3">
+                <h1>e-Receipt</h1>
+            </div>
+        </header>
+        <div class="table-responsive">
+            <table class="table table-striped table-dark text-center">
+                <thead class="thead-light">
+                    <tr>
+                        <th>S/N</th>
+                        <th>Item</th>
+                        <th>Price (₦)</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody">
+                    <tr class="text-center">
+                        <td>
+                            <span id="sn" class="">1</span>
+                        </td>
+                        <td>
+                            <input class="text-center" id="itemInp1" type="text" placeholder="Item">
+                        </td>
+                        <td>
+                            <input class="text-center priceInp" id="priceInp1" type="number" placeholder="0">
+                        </td>
+                        <td>
+                            <input class="text-center quantityInp" id="quantityInp1" type="number" placeholder="0">
+                        </td>
+                        <td>
+                            <input class="text-center bg-white disp" id="totalDisp1" type="number" value="0" disabled>
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary editBtn" id="1" value="Edit">
+                        </td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="fixed-bottom">
+        <div class="row mb-5 ">
+            <div class="col-10"></div>
+            <div class="col-2 whole text-right"><button id="btnAdd"
+                    class="btn btn-primary mr-2 font-weight-bold"><span>+</span></button><button id="btnMinus"
+                    class="btn btn-primary font-weight-bold mr-3"><span>-</span></button></div>
+        </div>
+        <div class=" bg-light row p-3">
+            <div class="col-9">
+
+            </div>
+            <div class="col-3 font-weight-bold">Grand Total :<span id="grandT"
+                    class="ml-1 bg-dark rounded pr-3 pl-3 text-white">#0</span>Naira</div>
+        </div>
+    </div>
+
+
+
+    <script>
+        (function ($) {
+            let priceInp = 0;
+            let qtyInp = 0;
+            let rowSum = 0;
+            let grandTot = 0;
+            let count = 0;
+            let j = 1;
+            let sum = (x, y) => {
+
+            }
+            let calc = () => {
+                $('input').on('keyup', (e) => {
+                    if (e.target.classList.contains('priceInp')) {
+                        priceInp = e.target.value;
+                        
+                        console.log('price= ', e.target.value);
+                        if (($(e.target).parent().next().children().val()) >= 1) {
+                            qtyInp = $(e.target).parent().next().children().val();
+                            console.log(qtyInp,priceInp);
+                            
+                            $(e.target).parent().next().next().children().val(qtyInp*priceInp)
+                            rowSum = qtyInp * priceInp;
+                            if (grandTot == '0') {
+                                $("#grandT").html(`${rowSum}`);
+                            } else {
+                                $("#grandT").html(grandTot + rowSum);
+                            }
+                        }
+
+                    } else if (e.target.classList.contains('quantityInp')) {
+                        qtyInp = e.target.value;
+                        console.log('qty= ', e.target.value);
+                        console.log($(e.target).parent().next().children().val());
+                        $(e.target).parent().next().children().val(qtyInp * priceInp);
+                        rowSum = qtyInp * priceInp;
+                        if (grandTot == '0') {
+                            $("#grandT").html(`${rowSum}`);
+                        } else {
+                            $("#grandT").html(grandTot + rowSum);
+                        }
+                    }
+                })
+            }
+            calc();
+            $("#btnAdd").click(function () {
+
+                if ($(`#totalDisp${j}`).val() != "0" && $(`#totalDisp${j}`).val() != "" && $(`#itemInp${j}`).val() != "") {
+                    j++;
+                    grandTot = parseInt($("#grandT").html());
+                    $("#tBody").append(`<tr class="text-center">
+                        <td>
+                            <span id="sn" class="">${j}</span>
+                        </td>
+                        <td>
+                            <input class="text-center" id="itemInp${j}" type="text" placeholder="Item">
+                            </td>
+                        <td>
+                            <input class="text-center priceInp" id="priceInp${j}" type="number" placeholder="0">
+                        </td>
+                        <td>
+                            <input class="text-center quantityInp"  id="quantityInp${j}" type="number" placeholder="0">
+                        </td>
+                        <td>
+                            <input class="text-center bg-white" id="totalDisp${j}" type="number" value="0" disabled>
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary editBtn" id="${j}" value="Edit">
+                        </td>
+                    </tr>`)
+                    $(`#priceInp${j - 1}`).attr('disabled', true);
+                    $(`#itemInp${j - 1}`).attr('disabled', true);
+                    $(`#quantityInp${j - 1}`).attr('disabled', true);
+                    priceInp = 0;
+                    qtyInp = 0;
+                    calc();
+                } else {
+                    $('.whole').effect('shake')
+                }
+            });
+            $('body').on('click', (e) => {
+                if (e.target.classList.contains('editBtn')) {
+                    // console.log($("tBody").children("tr:last").children('td').eq(2).children().val());
+                    // console.log($("tBody").children("tr:last").children('td').eq(3).children().val());
+
+                    if ($(e.target).parent().prevAll().children().val() != 0 && j > 1) {
+                        $(e.target).toggleClass('bg-success');
+                        $(e.target).parent().prev().prevAll().children().prop('disabled', false);
+
+                        if ($(e.target).val() == 'Edit') {
+                            priceInp = 0;
+                            qtyInp = 0;
+                            $(e.target).val('Save');
+                            priceInp = $(e.target).parent().prev().prev().prev().children().val();
+                            let rowTotal = $(e.target).parent().prev().children().val();
+                            qtyInp = $(e.target).parent().prev().prev().children().val();
+                            console.log(priceInp, qtyInp, rowTotal);
+                            grandTot = parseInt($("#grandT").html()) - rowTotal;
+                        } else {
+                            console.log('saved');
+                            $(e.target).val('Edit');
+                            $(e.target).parent().prev().prevAll().children().prop('disabled', true);
+                            priceInp = $("tBody").children("tr:last").children('td').eq(2).children().val();
+                            qtyInp = $("tBody").children("tr:last").children('td').eq(3).children().val();
+
+                        }
+                        // if ($(e.target).val() == 'Sa') {
+                        //     console.log('saved');
+
+                        // }
+                    }
+
+                }
+            })
+            $("#btnMinus").click(function () {
+
+                if (j > 1) {
+                    $("tBody").children("tr:last").remove();
+                    j--;
+                }
+            })
+        })(jQuery);
+    </script>
+</body>
+
+</html>
